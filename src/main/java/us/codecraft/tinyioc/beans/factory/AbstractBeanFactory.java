@@ -13,9 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author yihua.huang@dianping.com
  */
 public abstract class AbstractBeanFactory implements BeanFactory {
-
+	//bean map key为beanname，value为BeanDefinition类，其中已设置了bean实体对象
 	private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>();
 
+	//bean名称列表
 	private final List<String> beanDefinitionNames = new ArrayList<String>();
 
 	private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
@@ -26,15 +27,19 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		if (beanDefinition == null) {
 			throw new IllegalArgumentException("No bean named " + name + " is defined");
 		}
+		//bean已经创建直接从beanDefinitionMap获取，没有则初始化
 		Object bean = beanDefinition.getBean();
 		if (bean == null) {
+			//创建bean对象并填充属性
 			bean = doCreateBean(beanDefinition);
+			//
             bean = initializeBean(bean, name);
             beanDefinition.setBean(bean);
 		}
 		return bean;
 	}
 
+	//未完成      调用当前bean的生命周期方法
 	protected Object initializeBean(Object bean, String name) throws Exception {
 		for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
 			bean = beanPostProcessor.postProcessBeforeInitialization(bean, name);
@@ -48,6 +53,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	protected Object createBeanInstance(BeanDefinition beanDefinition) throws Exception {
+		//反射获取对象
 		return beanDefinition.getBeanClass().newInstance();
 	}
 
@@ -64,8 +70,10 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 	}
 
 	protected Object doCreateBean(BeanDefinition beanDefinition) throws Exception {
+		//获取bean对象
 		Object bean = createBeanInstance(beanDefinition);
 		beanDefinition.setBean(bean);
+		//交给AutowireCapableBeanFactory实现，通过反射自动装配bean的所有属性
 		applyPropertyValues(bean, beanDefinition);
 		return bean;
 	}

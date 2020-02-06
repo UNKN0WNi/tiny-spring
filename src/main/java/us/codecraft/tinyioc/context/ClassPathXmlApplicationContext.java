@@ -22,13 +22,16 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
 	public ClassPathXmlApplicationContext(String configLocation, AbstractBeanFactory beanFactory) throws Exception {
 		super(beanFactory);
 		this.configLocation = configLocation;
+		//加载bean的过程
 		refresh();
 	}
 
+	//
 	@Override
 	protected void loadBeanDefinitions(AbstractBeanFactory beanFactory) throws Exception {
 		XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(new ResourceLoader());
 		xmlBeanDefinitionReader.loadBeanDefinitions(configLocation);
+		//把从xml读取的beans都注册到beanfactory
 		for (Map.Entry<String, BeanDefinition> beanDefinitionEntry : xmlBeanDefinitionReader.getRegistry().entrySet()) {
 			beanFactory.registerBeanDefinition(beanDefinitionEntry.getKey(), beanDefinitionEntry.getValue());
 		}
