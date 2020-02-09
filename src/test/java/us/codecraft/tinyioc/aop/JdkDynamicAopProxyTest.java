@@ -21,7 +21,6 @@ public class JdkDynamicAopProxyTest {
 		// --------- helloWorldService with AOP
 		// 1. 设置被代理对象(Joinpoint)
 		AdvisedSupport advisedSupport = new AdvisedSupport();
-		//jdk动态代理不需有接口
 		TargetSource targetSource = new TargetSource(helloWorldService, HelloWorldServiceImpl.class,
 				HelloWorldService.class);
 		advisedSupport.setTargetSource(targetSource);

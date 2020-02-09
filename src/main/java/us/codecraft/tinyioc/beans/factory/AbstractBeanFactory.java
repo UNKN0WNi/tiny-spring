@@ -30,22 +30,22 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 		//bean已经创建直接从beanDefinitionMap获取，没有则初始化
 		Object bean = beanDefinition.getBean();
 		if (bean == null) {
-			//创建bean对象并填充属性
+			//创建bean对象并填充属性,这时候再填充属性，就不会出现循环依赖死锁的问题
 			bean = doCreateBean(beanDefinition);
-			//
+			//bean生命周期方法处理
             bean = initializeBean(bean, name);
             beanDefinition.setBean(bean);
 		}
 		return bean;
 	}
 
-	//未完成      调用当前bean的生命周期方法
+	//   调用当前bean的生命周期方法
 	protected Object initializeBean(Object bean, String name) throws Exception {
 		for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
 			bean = beanPostProcessor.postProcessBeforeInitialization(bean, name);
 		}
 
-		// TODO:call initialize method
+		// TODO:call initialize method 调用bean的初始化方法
 		for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
             bean = beanPostProcessor.postProcessAfterInitialization(bean, name);
 		}
